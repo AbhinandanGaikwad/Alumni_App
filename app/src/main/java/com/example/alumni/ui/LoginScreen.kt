@@ -56,13 +56,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.alumni.Data.AppUiState
 import com.example.alumni.R
 import kotlin.math.sin
+
 
 
 @Composable
 fun LoginScreen(
     appViewModel: AppViewModel,
+    onLoginButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val appUiState by appViewModel.uiState.collectAsState()
@@ -95,10 +98,13 @@ fun LoginScreen(
                         modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))
                     )
                     OutlinedTextField(
-                        value = appViewModel.userEmail,
+                        value = appUiState.userEmail,
                         singleLine = true,
                         shape = shapes.large,
-                        onValueChange = { appViewModel.updateEmail(it) },
+                        onValueChange = {
+                                newEmail->
+                            appViewModel.setEmail(newEmail)
+                        },
                         label = {
                             if (appUiState.isEmailWrong) {
                                 Text(stringResource(R.string.wrong_email))
@@ -118,10 +124,12 @@ fun LoginScreen(
                         )
                     )
                     OutlinedTextField(
-                        value = appViewModel.userPassword,
+                        value = appUiState.userPassword,
                         singleLine = true,
                         shape = shapes.large,
-                        onValueChange = { appViewModel.updatePassword(it) },
+                        onValueChange = { newPassword ->
+                                        appViewModel.setPassword(newPassword)
+                        },
                         modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
                         label = {
                             if (appUiState.isPasswordWrong) {
@@ -156,7 +164,7 @@ fun LoginScreen(
                         }
                     )
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = { onLoginButtonClicked() },
                         modifier = modifier
                             .padding(dimensionResource(R.dimen.padding_medium))
                             .fillMaxWidth()
@@ -247,5 +255,5 @@ fun GoogleButton(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(AppViewModel())
+    LoginScreen(AppViewModel(), onLoginButtonClicked = {})
 }
