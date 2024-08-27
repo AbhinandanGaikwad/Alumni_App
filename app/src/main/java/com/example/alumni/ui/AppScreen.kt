@@ -2,7 +2,6 @@ package com.example.alumni.ui
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.paddingFrom
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -12,7 +11,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,11 +21,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.alumni.Data.AppUiState
 import com.example.alumni.R
 
 enum class AppScreen(@StringRes val title: Int){
     Login(title = R.string.login_screen),
+    UserSelection(title = R.string.select_user),
     ProfileUpdate(title = R.string.profile_update)
 }
 
@@ -82,8 +80,18 @@ fun AlumniApp(
             startDestination = AppScreen.Login.name,
             modifier = Modifier.padding(innerPadding)) {
             composable(route = AppScreen.Login.name){
-                LoginScreen(appViewModel = viewModel,
-                    onLoginButtonClicked = { navController.navigate(AppScreen.ProfileUpdate.name) })
+                LoginScreen(
+                    appViewModel = viewModel,
+                    onLoginButtonClicked = { navController.navigate(AppScreen.UserSelection.name) }
+                )
+            }
+
+            composable(route = AppScreen.UserSelection.name) {
+                UserSelectionScreen(
+                    appViewModel = viewModel,
+                    onAlumniButtonClick = { navController.navigate(AppScreen.ProfileUpdate.name) },
+                    onOtherButtonClick = {}
+                )
             }
 
             composable(route = AppScreen.ProfileUpdate.name){

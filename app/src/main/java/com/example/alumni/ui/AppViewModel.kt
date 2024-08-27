@@ -1,10 +1,6 @@
 package com.example.alumni.ui
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.alumni.Data.AppUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,7 +27,13 @@ class AppViewModel: ViewModel() {
         }
     }
 
-
+    fun setUser(userInput: String){
+        _uiState.update { currentState ->
+            currentState.copy(
+                user = userInput
+            )
+        }
+    }
 
     fun setName(nameInput: String){
         _uiState.update { currentState ->
@@ -53,6 +55,14 @@ class AppViewModel: ViewModel() {
         _uiState.update { currentState ->
             currentState.copy(
                 workDetails = workInput
+            )
+        }
+    }
+
+    fun setPosition(positionInput: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                position = positionInput
             )
         }
     }

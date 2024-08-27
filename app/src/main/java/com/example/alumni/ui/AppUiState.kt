@@ -1,16 +1,14 @@
-package com.example.alumni.Data
+package com.example.alumni.ui
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 
 data class AppUiState(
+    val user: String = "",
     val userEmail : String = "",
     val userPassword: String = "",
     var fullName: String = "",
     var passingYear: String = "",
     var workDetails: String = "",
+    var position: String = "",
     var workExperience: String = "",
     var location: String = "",
     val isEmailWrong: Boolean = false,
