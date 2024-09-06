@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,7 +27,8 @@ import com.example.alumni.R
 enum class AppScreen(@StringRes val title: Int){
     Login(title = R.string.login_screen),
     UserSelection(title = R.string.select_user),
-    ProfileUpdate(title = R.string.profile_update)
+    ProfileUpdate(title = R.string.profile_update),
+    DashboardScreen(title = R.string.dashboard)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,6 +64,7 @@ fun AlumniApp(
 ) {
     val navController = rememberNavController()
     val viewModel: AppViewModel = viewModel()
+    val appUiState by viewModel.uiState.collectAsState()
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
@@ -75,27 +78,52 @@ fun AlumniApp(
             navigateUp = { navController.navigateUp() }
         )
     }
-    ) {innerPadding ->
+    ) { innerPadding ->
         NavHost(navController = navController,
             startDestination = AppScreen.Login.name,
             modifier = Modifier.padding(innerPadding)) {
             composable(route = AppScreen.Login.name){
                 LoginScreen(
                     appViewModel = viewModel,
-                    onLoginButtonClicked = { navController.navigate(AppScreen.UserSelection.name) }
+                    onLoginButtonClicked = {
+                        if (appUiState.isProfileCreated) {
+                            navController.navigate(AppScreen.DashboardScreen.name)
+                        } else {
+                            navController.navigate(AppScreen.UserSelection.name)
+                        }
+                    }
                 )
             }
 
             composable(route = AppScreen.UserSelection.name) {
                 UserSelectionScreen(
                     appViewModel = viewModel,
-                    onAlumniButtonClick = { navController.navigate(AppScreen.ProfileUpdate.name) },
-                    onOtherButtonClick = {}
+                    onButtonClick = { navController.navigate(AppScreen.ProfileUpdate.name) }
                 )
             }
 
-            composable(route = AppScreen.ProfileUpdate.name){
-                ProfileScreen(appViewModel = viewModel)
+            composable(route = AppScreen.ProfileUpdate.name) {
+                ProfileScreen(
+                    appViewModel = viewModel,
+                    onSubmitClicked = {
+                        navController.navigate(AppScreen.DashboardScreen.name)
+                        viewModel.setProfileTrue()
+                    }
+                )
+            }
+
+            composable(route = AppScreen.DashboardScreen.name) {
+                DashboardScreen(
+                    appViewModel = viewModel,
+                    onEditButtonClicked = { navController.navigate(AppScreen.ProfileUpdate.name) },
+                    onSearchClicked = { /*TODO*/ },
+                    onDonateClicked = { /*TODO*/ },
+                    onAddOpeningsClicked = { /*TODO*/ },
+                    onProjectClicked = { /*TODO*/ },
+                    onViewOpeningsClicked = { /*TODO*/ },
+                    onAddStoryClicked = { /*TODO*/ },
+                    onAddEventClicked = { /*TODO*/ }
+                )
             }
         }
     }

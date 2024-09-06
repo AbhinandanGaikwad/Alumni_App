@@ -2,6 +2,7 @@ package com.example.alumni.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -17,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -31,96 +34,146 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ProfileScreen(
     appViewModel: AppViewModel,
-    modifier: Modifier = Modifier){
-
+    onSubmitClicked: () -> Unit,
+    modifier: Modifier = Modifier
+){
     val appUiState by appViewModel.uiState.collectAsState()
 
     Surface(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = modifier.padding(5.dp)) {
+        if (appUiState.user == "alumni") {
+            Column(modifier = modifier.padding(5.dp)) {
 
-            Text(text = "Full Name",
-                style = MaterialTheme.typography.labelLarge,
-                fontSize = 17.sp)
+                Text(
+                    text = "Full Name",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontSize = 17.sp
+                )
 
-            FixedSizeBorderTextField(
-                value = appUiState.fullName,
-                onValueChange = { newText -> appViewModel.setName(newText) },
-                modifier = modifier.padding(bottom = 30.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next)
+                FixedSizeBorderTextField(
+                    value = appUiState.fullName,
+                    onValueChange = { newText -> appViewModel.setName(newText) },
+                    modifier = modifier.padding(bottom = 30.dp),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    )
 
                 )
 
-            Text(text = "Email Address",
-                style = MaterialTheme.typography.labelLarge,
-                fontSize = 17.sp)
+                Text(
+                    text = "Email Address",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontSize = 17.sp
+                )
 
-            FixedSizeBorderText(
-                text = appUiState.userEmail,
-                borderSize = 2.dp,
-                borderColor = Color.Black,
-                modifier = Modifier.padding(bottom = 40.dp)
-            )
+                FixedSizeBorderText(
+                    text = appUiState.userEmail,
+                    borderSize = 2.dp,
+                    borderColor = Color.Black,
+                    modifier = Modifier.padding(bottom = 40.dp)
+                )
 
-            Text(text = "Graduation Year",
-                style = MaterialTheme.typography.labelLarge,
-                fontSize = 17.sp)
+                Text(
+                    text = "Graduation Year",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontSize = 17.sp
+                )
 
-            FixedSizeBorderTextField(
-                value = appUiState.passingYear,
-                onValueChange = { newText -> appViewModel.setYear(newText) },
-                modifier = modifier.padding(bottom = 30.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next)
+                FixedSizeBorderTextField(
+                    value = appUiState.passingYear,
+                    onValueChange = { newText -> appViewModel.setYear(newText) },
+                    modifier = modifier.padding(bottom = 30.dp),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    )
 
                 )
 
-            Text(text = "Work Details ( Name of your company,business,etc )",
-                style = MaterialTheme.typography.labelLarge,
-                fontSize = 17.sp)
+                Text(
+                    text = "Work Details (Name of your company,business etc)",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontSize = 17.sp
+                )
 
-            FixedSizeBorderTextField(
-                value = appUiState.workDetails,
-                onValueChange = { newText -> appViewModel.setWork(newText)},
-                modifier = modifier.padding(bottom = 30.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next)
+                FixedSizeBorderTextField(
+                    value = appUiState.workDetails,
+                    onValueChange = { newText -> appViewModel.setWork(newText) },
+                    modifier = modifier.padding(bottom = 30.dp),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    )
+                )
+
+                Text(
+                    text = "Work Experience (in Years)",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontSize = 17.sp
+                )
+
+                FixedSizeBorderTextField(
+                    value = appUiState.workExperience,
+                    onValueChange = { newText -> appViewModel.setExperience(newText) },
+                    modifier = modifier.padding(bottom = 30.dp),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    )
 
                 )
 
-            Text(text = "Work Experience (in Years)",
-                style = MaterialTheme.typography.labelLarge,
-                fontSize = 17.sp)
-
-            FixedSizeBorderTextField(
-                value = appUiState.workExperience,
-                onValueChange = {newText -> appViewModel.setExperience(newText) },
-                modifier = modifier.padding(bottom = 30.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next)
-
+                Text(
+                    text = "Location (as City,Country) ",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontSize = 17.sp
                 )
 
-            Text(text = "Location ( as City,Country) ",
-                style = MaterialTheme.typography.labelLarge,
-                fontSize = 17.sp)
-
-            FixedSizeBorderTextField(
-                value = appUiState.location,
-                onValueChange = { newText -> appViewModel.setLocation(newText)},
-                modifier = modifier.padding(bottom = 30.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Done)
-
+                FixedSizeBorderTextField(
+                    value = appUiState.location,
+                    onValueChange = { newText -> appViewModel.setLocation(newText) },
+                    modifier = modifier.padding(bottom = 30.dp),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    )
                 )
 
+                Button(
+                    onClick = { onSubmitClicked() },
+                    modifier = modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    Text(text = "Submit")
+                }
+            }
+        } else {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = modifier.padding(5.dp)
+            ) {
+                Text(
+                    text = "Enter Your Name",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontSize = 17.sp
+                )
 
-
+                FixedSizeBorderTextField(
+                    value = appUiState.fullName,
+                    onValueChange = { newText -> appViewModel.setName(newText) },
+                    modifier = modifier.padding(30.dp),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    )
+                )
+                Button(
+                    onClick = { onSubmitClicked() },
+                    modifier = modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    Text(text = "Submit")
+                }
+            }
         }
     }
 }
@@ -190,5 +243,5 @@ fun FixedSizeBorderTextField(
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview(){
-    ProfileScreen(appViewModel = AppViewModel())
+    ProfileScreen(appViewModel = AppViewModel(), onSubmitClicked = {})
 }

@@ -59,14 +59,6 @@ class AppViewModel: ViewModel() {
         }
     }
 
-    fun setPosition(positionInput: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                position = positionInput
-            )
-        }
-    }
-
     fun setExperience(experienceInput: String){
         _uiState.update { currentState ->
             currentState.copy(
@@ -79,6 +71,30 @@ class AppViewModel: ViewModel() {
         _uiState.update { currentState ->
             currentState.copy(
                 location = locationInput
+            )
+        }
+    }
+
+    fun setStoryTrue() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                isStoryAdded = true
+            )
+        }
+    }
+
+    fun setEventTrue() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                isEventAdded = true
+            )
+        }
+    }
+
+    fun setProfileTrue() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                isProfileCreated = true
             )
         }
     }

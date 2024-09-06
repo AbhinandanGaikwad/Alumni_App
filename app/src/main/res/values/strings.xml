@@ -19,4 +19,15 @@
     <string name="alumni">Alumni</string>
     <string name="student">Student</string>
     <string name="college_admin">College Admin</string>
+    <string name="add_openings">Add Openings</string>
+    <string name="make_donation">Make Donation</string>
+    <string name="projects_initiatives">Projects / Initiatives</string>
+    <string name="view_openings">View Openings</string>
+    <string name="success_stories">Success Stories</string>
+    <string name="add_button">Add Button</string>
+    <string name="add_your_story">Add Your Story</string>
+    <string name="events">Events</string>
+    <string name="add_event">Add Event</string>
+    <string name="feedback_service"><![CDATA[Feedback & Service]]></string>
+    <string name="dashboard">Dashboard</string>
 </resources>

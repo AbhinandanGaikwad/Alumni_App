@@ -21,8 +21,7 @@ import com.example.alumni.R
 @Composable
 fun UserSelectionScreen(
     appViewModel: AppViewModel,
-    onAlumniButtonClick: () -> Unit,
-    onOtherButtonClick: () -> Unit,
+    onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -40,7 +39,7 @@ fun UserSelectionScreen(
             Button(
                 onClick = {
                     appViewModel.setUser(userInput = "alumni")
-                    onAlumniButtonClick()
+                    onButtonClick()
                 },
                 modifier = modifier
                     .width(156.dp)
@@ -51,7 +50,7 @@ fun UserSelectionScreen(
             Button(
                 onClick = {
                     appViewModel.setUser(userInput = "student")
-                    onOtherButtonClick()
+                    onButtonClick()
                 },
                 modifier = modifier
                     .width(156.dp)
@@ -62,10 +61,10 @@ fun UserSelectionScreen(
             Button(
                 onClick = {
                     appViewModel.setUser(userInput = "college")
-                    onOtherButtonClick()
+                    onButtonClick()
                 },
                 modifier = modifier
-                    .width(156.dp)
+                    .width(164.dp)
                     .padding(dimensionResource(R.dimen.padding_small))
             ) {
                 Text(text = stringResource(R.string.college_admin))
@@ -77,5 +76,5 @@ fun UserSelectionScreen(
 @Preview(showBackground = true)
 @Composable
 fun UserSelectionPreview() {
-    UserSelectionScreen(appViewModel = AppViewModel(), onAlumniButtonClick = {}, onOtherButtonClick = {})
+    UserSelectionScreen(appViewModel = AppViewModel(), onButtonClick = {})
 }
