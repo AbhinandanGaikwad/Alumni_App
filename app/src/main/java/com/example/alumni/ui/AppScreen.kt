@@ -4,6 +4,8 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,7 +30,11 @@ enum class AppScreen(@StringRes val title: Int){
     Login(title = R.string.login_screen),
     UserSelection(title = R.string.select_user),
     ProfileUpdate(title = R.string.profile_update),
-    DashboardScreen(title = R.string.dashboard)
+    DashboardScreen(title = R.string.dashboard),
+    DonationScreen(title = R.string.donation),
+    ProjectScreen(title = R.string.projects_initiatives),
+    AddOpportunityScreen(title = R.string.add_openings),
+    ViewOpportunityScreen(title = R.string.view_openings),
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,7 +42,9 @@ enum class AppScreen(@StringRes val title: Int){
 fun AlumniAppBar(
     currentScreen: AppScreen,
     canNavigateBack: Boolean,
+    onDashboard: Boolean,
     navigateUp: () -> Unit,
+    navigateLogin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     CenterAlignedTopAppBar(
@@ -46,7 +54,7 @@ fun AlumniAppBar(
         ),
         modifier = modifier,
         navigationIcon = {
-            if (canNavigateBack) {
+            if (canNavigateBack && !onDashboard) {
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
@@ -54,7 +62,20 @@ fun AlumniAppBar(
                     )
                 }
             }
+
+
+        },
+        actions = {
+            if(onDashboard){
+                IconButton(onClick = navigateLogin) {
+                    Icon(
+                        imageVector = Icons.Filled.Logout,
+                        contentDescription = stringResource(R.string.logout)
+                    )
+                }
+            }
         }
+
     )
 }
 
@@ -73,9 +94,16 @@ fun AlumniApp(
     )
 
     Scaffold(topBar = {
-        AlumniAppBar(currentScreen = currentScreen,
+        AlumniAppBar(
+            currentScreen = currentScreen,
             canNavigateBack = navController.previousBackStackEntry != null,
-            navigateUp = { navController.navigateUp() }
+            onDashboard = navController.currentBackStackEntry?.destination?.route == AppScreen.DashboardScreen.name,
+            navigateUp = { navController.navigateUp() },
+            navigateLogin = {
+                viewModel.resetState()
+                navController.navigate(AppScreen.Login.name){
+                popUpTo(0)
+            } }
         )
     }
     ) { innerPadding ->
@@ -117,14 +145,40 @@ fun AlumniApp(
                     appViewModel = viewModel,
                     onEditButtonClicked = { navController.navigate(AppScreen.ProfileUpdate.name) },
                     onSearchClicked = { /*TODO*/ },
-                    onDonateClicked = { /*TODO*/ },
-                    onAddOpeningsClicked = { /*TODO*/ },
-                    onProjectClicked = { /*TODO*/ },
-                    onViewOpeningsClicked = { /*TODO*/ },
+                    onDonateClicked = { navController.navigate(AppScreen.DonationScreen.name) },
+                    onAddOpeningsClicked = { navController.navigate(AppScreen.AddOpportunityScreen.name) },
+                    onProjectClicked = { navController.navigate(AppScreen.ProjectScreen.name) },
+                    onViewOpeningsClicked = { navController.navigate(AppScreen.ViewOpportunityScreen.name) },
                     onAddStoryClicked = { /*TODO*/ },
                     onAddEventClicked = { /*TODO*/ }
                 )
             }
+
+            composable(route = AppScreen.DonationScreen.name){
+                DonationScreen(
+                    appViewModel = viewModel
+                )
+            }
+
+            composable(route = AppScreen.ProjectScreen.name){
+                ProjectScreen(
+                    appViewModel = viewModel
+                )
+            }
+
+            composable(route = AppScreen.AddOpportunityScreen.name) {
+                OpportunityScreen(
+                    appViewModel = viewModel
+                )
+            }
+
+            composable(route = AppScreen.ViewOpportunityScreen.name){
+                OpportunityScreen(
+                    appViewModel = viewModel
+                )
+            }
+
+
         }
     }
 

@@ -99,6 +99,18 @@ class AppViewModel: ViewModel() {
         }
     }
 
+    fun resetState(){
+        _uiState.update { AppUiState() }
+    }
+
+    fun setAmount(newAmount: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                amount = newAmount
+            )
+        }
+    }
+
     /*fun updateEmail(changeEmail: String) {
         userEmail = changeEmail
     }

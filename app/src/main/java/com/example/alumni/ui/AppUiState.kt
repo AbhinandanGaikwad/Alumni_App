@@ -10,6 +10,7 @@ data class AppUiState(
     var workDetails: String = "",
     var workExperience: String = "",
     var location: String = "",
+    val amount: String = "",
     val isEmailWrong: Boolean = false,
     val isPasswordWrong: Boolean = false,
     var isStoryAdded: Boolean = false,

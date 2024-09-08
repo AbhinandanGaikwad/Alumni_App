@@ -174,7 +174,7 @@ fun LoginScreen(
                     GoogleButton(
                         text = "Sign Up with Google",
                         loadingText = "Creating Account...",
-                        onClicked = {},
+                        onClicked = { },
                         modifier = modifier
                             .padding(dimensionResource(R.dimen.padding_medium))
                             .fillMaxWidth()
