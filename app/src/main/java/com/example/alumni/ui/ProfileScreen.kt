@@ -2,6 +2,8 @@ package com.example.alumni.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,9 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -47,7 +51,11 @@ fun ProfileScreen(
 ){
     val appUiState by appViewModel.uiState.collectAsState()
 
-    Surface(modifier = Modifier.fillMaxSize()) {
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
         if (appUiState.user == "alumni") {
             Column(modifier = modifier.padding(5.dp)) {
 
@@ -95,7 +103,38 @@ fun ProfileScreen(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
                     )
+                )
 
+                Text(
+                    text = "Phone Number",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontSize = 17.sp
+                )
+
+                FixedSizeBorderTextField(
+                    value = appUiState.phoneNo,
+                    onValueChange = { newText -> appViewModel.setPhone(newText) },
+                    modifier = modifier.padding(bottom = 30.dp),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    )
+                )
+
+                Text(
+                    text = "LinkedIn Profile",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontSize = 17.sp
+                )
+
+                FixedSizeBorderTextField(
+                    value = appUiState.linkedIn,
+                    onValueChange = { newText -> appViewModel.setLinkedIn(newText) },
+                    modifier = modifier.padding(bottom = 30.dp),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    )
                 )
 
                 Text(

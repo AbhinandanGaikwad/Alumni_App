@@ -87,7 +87,6 @@ fun OpportunityScreen(
 
                 if(appUiState.user == "alumni") {
                     item {
-
                         Box(
                             modifier = modifier
                                 .fillMaxWidth()

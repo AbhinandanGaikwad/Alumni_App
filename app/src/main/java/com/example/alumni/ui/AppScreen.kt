@@ -35,6 +35,10 @@ enum class AppScreen(@StringRes val title: Int){
     ProjectScreen(title = R.string.projects_initiatives),
     AddOpportunityScreen(title = R.string.add_openings),
     ViewOpportunityScreen(title = R.string.view_openings),
+    AddStoryScreen(title = R.string.add_your_story),
+    AddEventScreen(title = R.string.add_event),
+    AlumniNetworkScreen(title = R.string.search_alumni_network),
+    FeedbackScreen(title = R.string.feedback_or_service)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -144,13 +148,14 @@ fun AlumniApp(
                 DashboardScreen(
                     appViewModel = viewModel,
                     onEditButtonClicked = { navController.navigate(AppScreen.ProfileUpdate.name) },
-                    onSearchClicked = { /*TODO*/ },
+                    onSearchClicked = { navController.navigate(AppScreen.AlumniNetworkScreen.name) },
                     onDonateClicked = { navController.navigate(AppScreen.DonationScreen.name) },
                     onAddOpeningsClicked = { navController.navigate(AppScreen.AddOpportunityScreen.name) },
                     onProjectClicked = { navController.navigate(AppScreen.ProjectScreen.name) },
                     onViewOpeningsClicked = { navController.navigate(AppScreen.ViewOpportunityScreen.name) },
-                    onAddStoryClicked = { /*TODO*/ },
-                    onAddEventClicked = { /*TODO*/ }
+                    onAddStoryClicked = { navController.navigate(AppScreen.AddStoryScreen.name) },
+                    onAddEventClicked = { navController.navigate(AppScreen.AddEventScreen.name) },
+                    onFeedbackClicked = { navController.navigate(AppScreen.FeedbackScreen.name) }
                 )
             }
 
@@ -178,7 +183,39 @@ fun AlumniApp(
                 )
             }
 
+            composable(route = AppScreen.AddStoryScreen.name) {
+                AddStoryScreen(
+                    appViewModel = viewModel,
+                    onPostClicked = {
+                        viewModel.setStoryTrue()
+                        navController.navigate(AppScreen.DashboardScreen.name)
+                    }
+                )
+            }
 
+            composable(route = AppScreen.AddEventScreen.name) {
+                AddEventScreen(
+                    appViewModel = viewModel,
+                    onPostClicked = {
+                        viewModel.setEventTrue()
+                        navController.navigate(AppScreen.DashboardScreen.name)
+                    }
+                )
+            }
+
+            composable(route = AppScreen.AlumniNetworkScreen.name){
+                AlumniNetworkScreen(
+                    appViewModel = viewModel
+                )
+            }
+
+            composable(route = AppScreen.FeedbackScreen.name){
+                FeedbackScreen(
+                    onSubmitClicked = {
+                        navController.navigate(AppScreen.DashboardScreen.name)
+                    }
+                )
+            }
         }
     }
 

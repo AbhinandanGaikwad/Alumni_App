@@ -48,4 +48,7 @@
     <string name="add_event">Add Event</string>
     <string name="feedback_service"><![CDATA[Feedback & Service]]></string>
     <string name="dashboard">Dashboard</string>
+    <string name="post">Post</string>
+    <string name="feedback_or_service">Feedback/Service</string>
+    <string name="submit">Submit</string>
 </resources>

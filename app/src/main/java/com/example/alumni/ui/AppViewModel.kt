@@ -75,6 +75,22 @@ class AppViewModel: ViewModel() {
         }
     }
 
+    fun setPhone(phoneInput: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                phoneNo = phoneInput
+            )
+        }
+    }
+
+    fun setLinkedIn(linkedInInput: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                linkedIn = linkedInInput
+            )
+        }
+    }
+
     fun setStoryTrue() {
         _uiState.update { currentState ->
             currentState.copy(
@@ -99,14 +115,84 @@ class AppViewModel: ViewModel() {
         }
     }
 
-    fun resetState(){
-        _uiState.update { AppUiState() }
+    fun setNameStory(nameStoryInput: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                nameStory = nameStoryInput
+            )
+        }
+    }
+
+    fun resetState() {
+        _uiState.update { currentState ->
+            AppUiState(
+                userEmail = "",
+                userPassword = "",
+                user = "",
+                fullName = "",
+                passingYear = "",
+                workDetails = "",
+                workExperience = "",
+                location = "",
+                phoneNo = "",
+                linkedIn = "",
+                amount = "",
+                nameStory = currentState.nameStory,
+                isStoryAdded = currentState.isStoryAdded,
+                isEventAdded = currentState.isEventAdded,
+                successStory = currentState.successStory,
+                eventDescription = currentState.eventDescription,
+                eventDate = currentState.eventDate,
+                eventTime = currentState.eventTime,
+                eventVenue = currentState.eventVenue
+            )
+        }
     }
 
     fun setAmount(newAmount: String) {
         _uiState.update { currentState ->
             currentState.copy(
                 amount = newAmount
+            )
+        }
+    }
+
+    fun setStory(storyInput: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                successStory = storyInput
+            )
+        }
+    }
+
+    fun setEventDescription(eventDescriptionInput: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                eventDescription = eventDescriptionInput
+            )
+        }
+    }
+
+    fun setEventDate(eventDateInput: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                eventDate = eventDateInput
+            )
+        }
+    }
+
+    fun setEventTime(eventTimeInput: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                eventTime = eventTimeInput
+            )
+        }
+    }
+
+    fun setEventVenue(eventVenueInput: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                eventVenue = eventVenueInput
             )
         }
     }

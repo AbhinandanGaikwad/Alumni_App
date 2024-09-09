@@ -1,26 +1,35 @@
 package com.example.alumni.ui
 
+
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,6 +63,7 @@ fun DashboardScreen(
     onViewOpeningsClicked: () -> Unit,
     onAddStoryClicked: () -> Unit,
     onAddEventClicked: () -> Unit,
+    onFeedbackClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val appUiState by appViewModel.uiState.collectAsState()
@@ -130,7 +141,7 @@ fun DashboardScreen(
                 appViewModel = appViewModel
             )
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { onFeedbackClicked() },
                 modifier = modifier
                     .padding(dimensionResource(R.dimen.padding_small))
                     .fillMaxWidth()
@@ -299,11 +310,7 @@ fun SuccessStoriesPanel(
             if (appUiState.user == "alumni") {
                 if (appUiState.isStoryAdded) {
                     Row {
-                        ElevatedCard(
-                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                        ) {
-
-                        }
+                        StoryCard(appViewModel = appViewModel)
                         ElevatedCard(
                             onClick = { onAddStoryClicked() },
                             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
@@ -352,13 +359,36 @@ fun SuccessStoriesPanel(
                     }
                 }
             } else {
-                ElevatedCard(
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                ) {
-
-                }
+                if (appUiState.isStoryAdded) { StoryCard(appViewModel = appViewModel) }
             }
         }
+    }
+}
+
+@Composable
+fun StoryCard(
+    appViewModel: AppViewModel,
+    modifier: Modifier = Modifier
+) {
+    val appUiState by appViewModel.uiState.collectAsState()
+
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        modifier = modifier
+            .padding(dimensionResource(R.dimen.padding_small))
+            .height(152.dp)
+            .width(124.dp)
+    ) {
+        Text(
+            text = appUiState.nameStory,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = modifier.padding(dimensionResource(R.dimen.padding_small))
+        )
+        Text(
+            text = appUiState.successStory,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = modifier.padding(start = dimensionResource(R.dimen.padding_small))
+        )
     }
 }
 
@@ -383,14 +413,12 @@ fun EventPanel(
                 .fillMaxWidth()
                 .height(168.dp)
         ) {
-            if (appUiState.user == "student" || appUiState.user == "college") {
-                if (appUiState.isStoryAdded) {
+            if (appUiState.user == "alumni") {
+                if (appUiState.isEventAdded) { EventCard(appViewModel = appViewModel) }
+            } else {
+                if (appUiState.isEventAdded) {
                     Row {
-                        ElevatedCard(
-                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                        ) {
-
-                        }
+                        EventCard(appViewModel = appViewModel)
                         ElevatedCard(
                             onClick = { onAddEventClicked() },
                             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
@@ -438,13 +466,52 @@ fun EventPanel(
                         )
                     }
                 }
-            } else {
-                ElevatedCard(
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                ) {
-
-                }
             }
+        }
+    }
+}
+
+@Composable
+fun EventCard(
+    appViewModel: AppViewModel,
+    modifier: Modifier = Modifier
+) {
+    val appUiState by appViewModel.uiState.collectAsState()
+
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        modifier = modifier
+            .padding(dimensionResource(R.dimen.padding_small))
+            .height(152.dp)
+            .width(124.dp)
+    ) {
+        Column(
+            modifier = modifier.padding(dimensionResource(R.dimen.padding_small))
+        ) {
+            Text(
+                text = "Event: ",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = appUiState.eventDescription,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Text(
+                text = "Date: ",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = appUiState.eventDate,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Text(
+                text = "Time: ",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = appUiState.eventTime,
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
     }
 }
@@ -461,6 +528,7 @@ fun DashboardPreview() {
         onProjectClicked = {},
         onViewOpeningsClicked = {},
         onAddStoryClicked = {},
-        onAddEventClicked = {}
+        onAddEventClicked = {},
+        onFeedbackClicked = {}
     )
 }
