@@ -1,9 +1,13 @@
 package com.example.alumni.ui
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,9 +17,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -53,6 +62,8 @@ fun DonationScreen(
     modifier: Modifier = Modifier
 ){
     val appUiState by appViewModel.uiState.collectAsState()
+    var expandedStatic by remember { mutableStateOf(false) }
+    var expandedDynamic by remember { mutableStateOf(false) }
     var selectedProject by remember { mutableStateOf<String?>(null) }
 
     val projects = Project.projects
@@ -89,7 +100,39 @@ fun DonationScreen(
                     }
                 }
 
-                items(projects) { project ->
+                item {
+                    val projectName = stringResource(R.string.project1)
+                    SelectableCard(
+                        projectName = stringResource(R.string.project1) ,
+                        projectDescription = stringResource(R.string.project_description),
+                        isSelected = selectedProject == stringResource(R.string.project1) ,
+                        isExpanded = expandedStatic,
+                        onExpandClick = {
+                            expandedStatic = !expandedStatic},
+                        onCardClick = {
+                            selectedProject = if (selectedProject == projectName) null else projectName
+                            selectedProject == projectName}
+                    )
+                }
+
+                if(appUiState.isProjectAdded){
+                    item {
+                        val projectName = appUiState.projectName
+                        SelectableCard(
+                            projectName = appUiState.projectName,
+                            projectDescription = appUiState.projectDescription,
+                            isSelected = selectedProject == appUiState.projectName,
+                            isExpanded = expandedDynamic,
+                            onExpandClick = {
+                                expandedDynamic = !expandedDynamic},
+                            onCardClick = {
+                                selectedProject = if (selectedProject == projectName) null else projectName
+                                selectedProject == projectName }
+                        )
+                    }
+                }
+
+                /*items(projects) { project ->
                     val projectName = stringResource(project.projectName)
 
                     SelectableCard(
@@ -99,7 +142,7 @@ fun DonationScreen(
                             selectedProject = if (selectedProject == projectName) null else projectName
                         }
                     )
-                }
+                }*/
 
                 item {
                     Box(modifier = modifier.fillMaxWidth()) {
@@ -148,37 +191,84 @@ fun DonationScreen(
 @Composable
 fun SelectableCard(
     projectName: String,
+    projectDescription: String,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onCardClick: () -> Unit,
+    isExpanded: Boolean,
+    onExpandClick: () -> Unit,
 ) {
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 5.dp)
-            .clickable {
-                onClick()
-            },
+            .padding(10.dp)
+            .clickable { onCardClick() },
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.White
+            containerColor =  if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.White
         ),
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-
-            Text(
-                text = projectName,
-                fontWeight = FontWeight.W400,
-                color = Color.Black
+        Column(modifier = Modifier.animateContentSize(
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioNoBouncy,
+                stiffness = Spring.StiffnessMedium
             )
+        )
+        ){
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+
+                Spacer(modifier = Modifier.weight(1.5f))
+
+                Text(
+                    text = projectName,
+                    fontWeight = FontWeight.W400,
+                    fontSize = 20.sp,
+                    color = Color.Black,
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                ProjectItemButton(
+                    expanded = isExpanded,
+                    onClick = onExpandClick
+                )
+
+
+            }
+
+            if (isExpanded) {
+                Text(
+                    text = projectDescription,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.Black,
+                    modifier = Modifier.padding(start = 16.dp, bottom = 16.dp)
+
+                )
+            }
         }
     }
 
+}
+
+@Composable
+private fun ProjectItemButton(
+    expanded: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier) {
+        Icon(imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+            contentDescription = "Icon Button",
+            tint = MaterialTheme.colorScheme.secondary)
+    }
 }
 
 @Composable

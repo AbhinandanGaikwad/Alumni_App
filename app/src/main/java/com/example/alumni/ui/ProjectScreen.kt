@@ -38,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -45,15 +46,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.testing.TestNavHostController
 import com.example.alumni.R
 import com.example.alumni.data.Project
 
 @Composable
 fun ProjectScreen(
     appViewModel: AppViewModel,
+    navController: NavController,
     modifier: Modifier = Modifier
 ){
     val appUiState by appViewModel.uiState.collectAsState()
+    var expandedStatic by remember { mutableStateOf(false) }
+    var expandedDynamic by remember { mutableStateOf(false) }
+
     val expandedStates = remember { mutableStateMapOf<Int, Boolean>() }
     val projects = Project.projects
 
@@ -75,19 +82,24 @@ fun ProjectScreen(
                     )
                 }
 
-                items(projects) { project ->
-                    val projectName = stringResource(project.projectName)
-                    val isExpanded = expandedStates[project.projectName] ?: false
-
-
+                item {
                     ProjectCard(
-                        projectName = projectName,
-                        projectDescription = stringResource(project.projectDescription),
-                        isExpanded = isExpanded,
-                        onExpandClick = {
-                            expandedStates[project.projectName] = !isExpanded
-                        },
+                        projectName = stringResource(R.string.project1) ,
+                        projectDescription = stringResource(R.string.project_description),
+                        isExpanded = expandedStatic,
+                        onExpandClick = { expandedStatic = !expandedStatic}
                     )
+                }
+
+                if(appUiState.isProjectAdded){
+                    item {
+                        ProjectCard(
+                            projectName = appUiState.projectName,
+                            projectDescription = appUiState.projectDescription,
+                            isExpanded = expandedDynamic,
+                            onExpandClick = { expandedDynamic = !expandedDynamic}
+                        )
+                    }
                 }
 
                 item {
@@ -99,7 +111,7 @@ fun ProjectScreen(
                             .align(Alignment.CenterHorizontally)
                     ){
                         Button(
-                            onClick = {  },
+                            onClick = { navController.navigate(AppScreen.AddProjectScreen.name) },
                             modifier = Modifier.align(Alignment.Center)
                         ) {
 
@@ -208,5 +220,25 @@ fun ProjectCard(
 @Preview(showBackground = true)
 @Composable
 fun ProjectScreenPreview(){
-    ProjectScreen(appViewModel = viewModel())
+    val mockNavController = TestNavHostController(LocalContext.current)
+
+    ProjectScreen(appViewModel = viewModel(),
+        navController = mockNavController)
 }
+
+/*
+items(projects) { project ->
+                    val projectName = stringResource(project.projectName)
+                    val isExpanded = expandedStates[project.projectName] ?: false
+
+
+                    ProjectCard(
+                        projectName = projectName,
+                        projectDescription = stringResource(project.projectDescription),
+                        isExpanded = isExpanded,
+                        onExpandClick = {
+                            expandedStates[project.projectName] = !isExpanded
+                        },
+                    )
+                }
+ */

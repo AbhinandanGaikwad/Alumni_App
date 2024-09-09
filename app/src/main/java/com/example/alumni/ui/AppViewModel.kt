@@ -91,6 +91,24 @@ class AppViewModel: ViewModel() {
         }
     }
 
+    fun setProjectTrue() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                isProjectAdded = true,
+
+                )
+        }
+    }
+
+    fun setOpeningTrue() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                isOpeningAdded = true,
+
+            )
+        }
+    }
+
     fun setStoryTrue() {
         _uiState.update { currentState ->
             currentState.copy(
@@ -137,6 +155,14 @@ class AppViewModel: ViewModel() {
                 phoneNo = "",
                 linkedIn = "",
                 amount = "",
+                isOpeningAdded = currentState.isOpeningAdded,
+                isProjectAdded = currentState.isProjectAdded,
+                projectName = currentState.projectName,
+                projectDescription = currentState.projectDescription,
+                openingName = currentState.openingName,
+                companyName = currentState.companyName,
+                roleName = currentState.roleName,
+                requiredExperience = currentState.requiredExperience,
                 nameStory = currentState.nameStory,
                 isStoryAdded = currentState.isStoryAdded,
                 isEventAdded = currentState.isEventAdded,
@@ -196,6 +222,58 @@ class AppViewModel: ViewModel() {
             )
         }
     }
+
+    fun setOpeningName(openingNameInput: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                openingName = openingNameInput
+            )
+        }
+    }
+
+    fun setCompanyName(companyNameInput: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                companyName = companyNameInput
+            )
+        }
+    }
+
+    fun setRoleName(roleNameInput: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                roleName = roleNameInput
+            )
+        }
+    }
+
+    fun setRequiredExperience(requiredExperienceInput: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                requiredExperience = requiredExperienceInput
+            )
+        }
+    }
+
+    fun setProjectName(projectNameInput: String){
+        _uiState.update { currentState ->
+            currentState.copy(
+                projectName = projectNameInput
+            )
+        }
+    }
+
+    fun setProjectDescription(projectDescriptionInput: String){
+        _uiState.update { currentState ->
+            currentState.copy(
+                projectDescription = projectDescriptionInput
+            )
+        }
+    }
+
+
+
+
 
     /*fun updateEmail(changeEmail: String) {
         userEmail = changeEmail

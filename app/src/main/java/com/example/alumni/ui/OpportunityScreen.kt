@@ -29,10 +29,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -40,21 +43,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.testing.TestNavHostController
 import com.example.alumni.R
-import com.example.alumni.data.Opening
+
 
 @Composable
 fun OpportunityScreen(
     appViewModel: AppViewModel,
+    navController: NavController,
     modifier: Modifier = Modifier
 ){
     val appUiState by appViewModel.uiState.collectAsState()
-    val expandedOpeningStates = remember { mutableStateMapOf<Int, Boolean>() }
-    val openings = Opening.openings
+    var expandedStatic by remember { mutableStateOf(false) }
+    var expandedDynamic by remember { mutableStateOf(false) }
+
 
 
     Surface(modifier = modifier.fillMaxSize()) {
-        Column(modifier = modifier.fillMaxSize().padding(5.dp),
+        Column(modifier = modifier
+            .fillMaxSize()
+            .padding(5.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally) {
 
@@ -70,19 +79,28 @@ fun OpportunityScreen(
                     )
                 }
 
-                items(openings) { opening ->
-                    val openingName = stringResource(opening.openingName)
-                    val isOpeningExpanded = expandedOpeningStates[opening.openingName] ?: false
-
-
+                item {
                     OpeningCard(
-                        openingName = openingName,
-                        openingDescription = stringResource(opening.openingDescription),
-                        isOpeningExpanded = isOpeningExpanded,
-                        onOpeningExpandClick = {
-                            expandedOpeningStates[opening.openingName] = !isOpeningExpanded
-                        }
+                        openingName = stringResource(R.string.opening1) ,
+                        companyName = "Company Name: Nexus Architects",
+                        roleName = "Role Name: Software Developer",
+                        requiredExperience = "Required Work Experience: 3 years",
+                        isOpeningExpanded = expandedStatic,
+                        onOpeningExpandClick = { expandedStatic = !expandedStatic}
                     )
+                }
+
+                if(appUiState.isOpeningAdded){
+                    item {
+                        OpeningCard(
+                            openingName = appUiState.openingName,
+                            companyName = "Company Name: ${appUiState.companyName}",
+                            roleName = "Role Name: ${appUiState.roleName}",
+                            requiredExperience = "Required Work Experience: ${appUiState.requiredExperience}",
+                            isOpeningExpanded = expandedDynamic,
+                            onOpeningExpandClick = { expandedDynamic = !expandedDynamic}
+                        )
+                    }
                 }
 
                 if(appUiState.user == "alumni") {
@@ -94,7 +112,7 @@ fun OpportunityScreen(
                                 .align(Alignment.CenterHorizontally)
                         ){
                             Button(
-                                onClick = {  },
+                                onClick = { navController.navigate(AppScreen.AddOpeningScreen.name) },
                                 modifier = Modifier.align(Alignment.Center)
                             ) {
 
@@ -137,7 +155,9 @@ private fun OpportunityItemButton(
 @Composable
 fun OpeningCard(
     openingName: String,
-    openingDescription: String,
+    companyName: String,
+    roleName: String,
+    requiredExperience: String,
     isOpeningExpanded: Boolean,
     onOpeningExpandClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -187,13 +207,30 @@ fun OpeningCard(
             }
 
             if (isOpeningExpanded) {
-                Text(
-                    text = openingDescription,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Black,
-                    modifier = modifier.padding(start = 16.dp, bottom = 16.dp)
 
-                )
+                Column {
+                    Text(
+                        text = companyName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Black,
+                        modifier = modifier.padding(start = 16.dp, bottom = 16.dp)
+
+                    )
+                    Text(
+                        text = roleName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Black,
+                        modifier = modifier.padding(start = 16.dp, bottom = 16.dp)
+
+                    )
+                    Text(
+                        text = requiredExperience,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Black,
+                        modifier = modifier.padding(start = 16.dp, bottom = 16.dp)
+
+                    )
+                }
             }
         }
     }
@@ -202,5 +239,28 @@ fun OpeningCard(
 @Preview
 @Composable
 fun OpportunityScreenPreview(){
-    OpportunityScreen(appViewModel = viewModel())
+
+    val mockNavController = TestNavHostController(LocalContext.current)
+
+    OpportunityScreen(appViewModel = viewModel(),
+        navController = mockNavController)
 }
+
+/*
+val expandedOpeningStates = remember { mutableStateMapOf<Int, Boolean>() }
+    val openings = Opening.openings
+
+items(openings) { opening ->
+                    val openingName = stringResource(opening.openingName)
+                    val isOpeningExpanded = expandedOpeningStates[opening.openingName] ?: false
+
+
+                    OpeningCard(
+                        openingName = openingName,
+                        openingDescription = stringResource(opening.openingDescription),
+                        isOpeningExpanded = isOpeningExpanded,
+                        onOpeningExpandClick = {
+                            expandedOpeningStates[opening.openingName] = !isOpeningExpanded
+                        }
+                    )
+                }*/

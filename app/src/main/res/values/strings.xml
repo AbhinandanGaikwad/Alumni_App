@@ -21,6 +21,7 @@
     <string name="student">Student</string>
     <string name="college_admin">College Admin</string>
     <string name="add_openings">Add/View Openings</string>
+    <string name="add_new_opening">Add New Opening</string>
     <string name="opportunities">Currently Available Job Openings and Opportunities</string>
     <string name="opening1">Job Opening 1</string>
     <string name="opening2">Job Opening 2</string>
@@ -39,8 +40,9 @@
     <string name="project3">Project 3</string>
     <string name="project4">Project 4</string>
     <string name="project5">Project 5</string>
+    <string name="add_new_project">Add New Project</string>
     <string name="project_description">An innovative project aimed at improving user experience through intuitive design and seamless functionality.</string>
-    <string name="view_openings">View Openings</string>
+    <string name="view_openings">Openings</string>
     <string name="success_stories">Success Stories</string>
     <string name="add_button">Add Button</string>
     <string name="add_your_story">Add Your Story</string>

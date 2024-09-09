@@ -33,8 +33,9 @@ enum class AppScreen(@StringRes val title: Int){
     DashboardScreen(title = R.string.dashboard),
     DonationScreen(title = R.string.donation),
     ProjectScreen(title = R.string.projects_initiatives),
-    AddOpportunityScreen(title = R.string.add_openings),
-    ViewOpportunityScreen(title = R.string.view_openings),
+    AddProjectScreen(title = R.string.add_new_project),
+    OpportunityScreen(title = R.string.view_openings),
+    AddOpeningScreen(title = R.string.add_new_opening),
     AddStoryScreen(title = R.string.add_your_story),
     AddEventScreen(title = R.string.add_event),
     AlumniNetworkScreen(title = R.string.search_alumni_network),
@@ -150,9 +151,9 @@ fun AlumniApp(
                     onEditButtonClicked = { navController.navigate(AppScreen.ProfileUpdate.name) },
                     onSearchClicked = { navController.navigate(AppScreen.AlumniNetworkScreen.name) },
                     onDonateClicked = { navController.navigate(AppScreen.DonationScreen.name) },
-                    onAddOpeningsClicked = { navController.navigate(AppScreen.AddOpportunityScreen.name) },
+                    onAddOpeningsClicked = { navController.navigate(AppScreen.OpportunityScreen.name) },
                     onProjectClicked = { navController.navigate(AppScreen.ProjectScreen.name) },
-                    onViewOpeningsClicked = { navController.navigate(AppScreen.ViewOpportunityScreen.name) },
+                    onViewOpeningsClicked = { navController.navigate(AppScreen.OpportunityScreen.name) },
                     onAddStoryClicked = { navController.navigate(AppScreen.AddStoryScreen.name) },
                     onAddEventClicked = { navController.navigate(AppScreen.AddEventScreen.name) },
                     onFeedbackClicked = { navController.navigate(AppScreen.FeedbackScreen.name) }
@@ -167,21 +168,18 @@ fun AlumniApp(
 
             composable(route = AppScreen.ProjectScreen.name){
                 ProjectScreen(
-                    appViewModel = viewModel
+                    appViewModel = viewModel,
+                    navController = navController
                 )
             }
 
-            composable(route = AppScreen.AddOpportunityScreen.name) {
+            composable(route = AppScreen.OpportunityScreen.name) {
                 OpportunityScreen(
-                    appViewModel = viewModel
+                    appViewModel = viewModel, navController = navController
                 )
             }
 
-            composable(route = AppScreen.ViewOpportunityScreen.name){
-                OpportunityScreen(
-                    appViewModel = viewModel
-                )
-            }
+
 
             composable(route = AppScreen.AddStoryScreen.name) {
                 AddStoryScreen(
@@ -216,6 +214,25 @@ fun AlumniApp(
                     }
                 )
             }
+
+            composable(route = AppScreen.AddOpeningScreen.name) {
+                AddOpeningScreen(appViewModel = viewModel,
+                    onAddClicked = { viewModel.setOpeningTrue()
+                        navController.navigate(AppScreen.DashboardScreen.name)
+                    }
+                )
+                   }
+
+            composable(route = AppScreen.AddProjectScreen.name) {
+                AddProjectScreen(appViewModel = viewModel,
+                    onAddProjectClicked = {
+                        viewModel.setProjectTrue()
+                        navController.navigate(AppScreen.DashboardScreen.name)
+                    }
+                )
+            }
+
+            }
         }
     }
 
@@ -231,4 +248,3 @@ fun AlumniApp(
         }
     }*/
 
-}
