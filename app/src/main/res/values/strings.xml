@@ -27,7 +27,7 @@
     <string name="opening3">Job Opening 3</string>
     <string name="opening4">Job Opening 4</string>
     <string name="opening5">Job Opening 5</string>
-    <string name="job_description">Company : Nexus Architects\n Role: Software Developer\n Work Experience : 3 years</string>
+    <string name="job_description">Company : Nexus Architects\nRole: Software Developer\nWork Experience : 3 years</string>
     <string name="make_donation">Make Donation</string>
     <string name="donation">Donate</string>
     <string name="thanks_donate">Thank you for choosing to donate to the projects and initiatives! Please select the project you want to support.</string>

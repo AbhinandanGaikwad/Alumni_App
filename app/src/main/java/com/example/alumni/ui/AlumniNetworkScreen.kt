@@ -149,11 +149,13 @@ fun AlumniCard(
                 ) {
                     Text(
                         text = name,
-                        style = MaterialTheme.typography.headlineMedium
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color.Black
                     )
                     Text(
                         text = workDetails,
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Black
                     )
                 }
                 IconButton(
@@ -173,23 +175,28 @@ fun AlumniCard(
                 ) {
                     Text(
                         text = "Passing Year: $passingYear",
-                        style = MaterialTheme.typography.labelLarge
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color.Black
                     )
                     Text(
                         text = "Works at: $workDetails",
-                        style = MaterialTheme.typography.labelLarge
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color.Black
                     )
                     Text(
                         text = "Experience: $experience",
-                        style = MaterialTheme.typography.labelLarge
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color.Black
                     )
                     Text(
                         text = "Location: $location",
-                        style = MaterialTheme.typography.labelLarge
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color.Black
                     )
                     Text(
                         text = "Connect with me on: ",
-                        style = MaterialTheme.typography.labelLarge
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color.Black
                     )
                     Row(
                         modifier = modifier

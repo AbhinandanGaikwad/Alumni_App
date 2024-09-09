@@ -172,8 +172,8 @@ fun OpeningCard(
                 Text(
                     text = openingName,
                     fontWeight = FontWeight.W400,
-                    fontSize = 20.sp,
                     color = Color.Black,
+                    fontSize = 20.sp,
                 )
 
                 Spacer(modifier = modifier.weight(1f))
@@ -189,7 +189,8 @@ fun OpeningCard(
             if (isOpeningExpanded) {
                 Text(
                     text = openingDescription,
-                    style = MaterialTheme.typography.labelLarge,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Black,
                     modifier = modifier.padding(start = 16.dp, bottom = 16.dp)
 
                 )
