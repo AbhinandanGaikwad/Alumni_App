@@ -1,8 +1,10 @@
-package com.example.alumni.ui
+package com.example.alumni.ui.opening
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -29,9 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,7 +47,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.testing.TestNavHostController
 import com.example.alumni.R
-
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
+import com.example.alumni.ui.AppScreen
+import com.example.alumni.ui.viewmodel.AppViewModel
 
 @Composable
 fun OpportunityScreen(
@@ -54,21 +59,24 @@ fun OpportunityScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ){
-    val appUiState by appViewModel.uiState.collectAsState()
-    var expandedStatic by remember { mutableStateOf(false) }
-    var expandedDynamic by remember { mutableStateOf(false) }
+    val userType by appViewModel.userType
+    val openings by appViewModel.openings.collectAsState()
 
+    val expandedStates = remember { mutableStateMapOf<String, Boolean>() }
 
+    LaunchedEffect(Unit) {
+        appViewModel.fetchOpeningsFromFirebase()
+    }
 
     Surface(modifier = modifier.fillMaxSize()) {
-        Column(modifier = modifier
-            .fillMaxSize()
-            .padding(5.dp),
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(5.dp),
             verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             LazyColumn {
-
                 item {
                     Text(
                         text = stringResource(R.string.opportunities),
@@ -79,63 +87,48 @@ fun OpportunityScreen(
                     )
                 }
 
-                item {
+                items(openings) { opening ->
+                    val isExpanded = expandedStates[opening.id] ?: false
                     OpeningCard(
-                        openingName = stringResource(R.string.opening1) ,
-                        companyName = "Company Name: Nexus Architects",
-                        roleName = "Role Name: Software Developer",
-                        requiredExperience = "Required Work Experience: 3 years",
-                        isOpeningExpanded = expandedStatic,
-                        onOpeningExpandClick = { expandedStatic = !expandedStatic}
+                        openingName = opening.openingName,
+                        companyName = "Company Name: ${opening.companyName}",
+                        roleName = "Role Name: ${opening.roleName}",
+                        email = opening.contactEmail,
+                        requiredExperience = "Required Work Experience: ${opening.requiredExperience}",
+                        isOpeningExpanded = isExpanded,
+                        onOpeningExpandClick = {
+                            expandedStates[opening.id] = !isExpanded
+                        }
                     )
                 }
 
-                if(appUiState.isOpeningAdded){
-                    item {
-                        OpeningCard(
-                            openingName = appUiState.openingName,
-                            companyName = "Company Name: ${appUiState.companyName}",
-                            roleName = "Role Name: ${appUiState.roleName}",
-                            requiredExperience = "Required Work Experience: ${appUiState.requiredExperience}",
-                            isOpeningExpanded = expandedDynamic,
-                            onOpeningExpandClick = { expandedDynamic = !expandedDynamic}
-                        )
-                    }
-                }
-
-                if(appUiState.user == "alumni") {
+                if (userType == "alumni") {
                     item {
                         Box(
                             modifier = modifier
                                 .fillMaxWidth()
                                 .padding(16.dp)
                                 .align(Alignment.CenterHorizontally)
-                        ){
+                        ) {
                             Button(
                                 onClick = { navController.navigate(AppScreen.AddOpeningScreen.name) },
                                 modifier = Modifier.align(Alignment.Center)
                             ) {
-
                                 Icon(
                                     imageVector = Icons.Filled.Add,
                                     contentDescription = "Add",
                                     modifier = modifier.padding(end = 10.dp)
                                 )
-
                                 Text(text = "Add new opening")
-
-
                             }
                         }
                     }
                 }
-
             }
-
         }
     }
-
 }
+
 
 @Composable
 private fun OpportunityItemButton(
@@ -157,12 +150,13 @@ fun OpeningCard(
     openingName: String,
     companyName: String,
     roleName: String,
+    email: String,
     requiredExperience: String,
     isOpeningExpanded: Boolean,
     onOpeningExpandClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
-
+    val uriHandler = LocalUriHandler.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -228,8 +222,28 @@ fun OpeningCard(
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Black,
                         modifier = modifier.padding(start = 16.dp, bottom = 16.dp)
-
                     )
+                    Column(
+                        modifier = modifier
+                            .clickable {
+                                uriHandler.openUri("mailto:$email")
+                            }
+                            .padding(start = 16.dp, bottom = 16.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = painterResource(R.drawable.gmail),
+                                contentDescription = "Email",
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.size(8.dp))
+                            Text(
+                                text = "E-mail for More Details",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.Black
+                            )
+                        }
+                    }
                 }
             }
         }

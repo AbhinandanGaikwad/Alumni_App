@@ -1,5 +1,6 @@
-package com.example.alumni.ui
+package com.example.alumni.ui.project
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,14 +17,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.alumni.R
+import com.example.alumni.ui.viewmodel.AppViewModel
 
 @Composable
-fun AddEventScreen(
+fun AddProjectScreen(
     appViewModel: AppViewModel,
-    onPostClicked: () -> Unit,
+    onAddProjectClicked: () -> Unit,
     modifier: Modifier = Modifier
-) {
+){
     val appUiState by appViewModel.uiState.collectAsState()
 
     Column(
@@ -32,58 +35,62 @@ fun AddEventScreen(
             .padding(dimensionResource(R.dimen.padding_medium))
     ) {
         Text(
-            text = stringResource(R.string.add_event),
+            text = "Add New Project",
             style = MaterialTheme.typography.titleMedium,
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = dimensionResource(R.dimen.padding_small))
         )
         OutlinedTextField(
-            value = appUiState.eventDescription,
-            onValueChange = { appViewModel.setEventDescription(it) },
-            label = { Text("Event Description") },
+            value = appUiState.projectName,
+            onValueChange = { appViewModel.setProjectName(it) },
+            label = { Text("Project Name") },
             modifier = modifier
                 .fillMaxWidth()
                 .padding(bottom = dimensionResource(R.dimen.padding_small))
         )
         OutlinedTextField(
-            value = appUiState.eventDate,
-            onValueChange = { appViewModel.setEventDate(it) },
-            label = { Text("Date") },
+            value = appUiState.projectDescription,
+            onValueChange = { appViewModel.setProjectDescription(it) },
+            label = { Text("Project Description") },
             modifier = modifier
                 .fillMaxWidth()
                 .padding(bottom = dimensionResource(R.dimen.padding_small))
         )
+
         OutlinedTextField(
-            value = appUiState.eventTime,
-            onValueChange = { appViewModel.setEventTime(it) },
-            label = { Text("Time") },
+            value = appUiState.projectCost,
+            onValueChange = { appViewModel.setProjectCost(it) },
+            label = { Text("Project Cost") },
             modifier = modifier
                 .fillMaxWidth()
                 .padding(bottom = dimensionResource(R.dimen.padding_small))
         )
-        OutlinedTextField(
-            value = appUiState.eventVenue,
-            onValueChange = { appViewModel.setEventVenue(it) },
-            label = { Text("Venue") },
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(bottom = dimensionResource(R.dimen.padding_medium))
-        )
+
         Button(
             modifier = modifier.align(Alignment.CenterHorizontally),
-            onClick = { onPostClicked() }
+            onClick = {
+                appViewModel.postProjectToFirebase(
+                    onSuccess = {
+                        onAddProjectClicked()
+                    },
+                    onFailure = {
+                        Log.e("AddProject", "Failed to post project", it)
+                    }
+                )
+            }
         ) {
             Text(
-                text = stringResource(R.string.post),
+                text = stringResource(R.string.add_new_project),
                 style = MaterialTheme.typography.titleMedium
             )
         }
+
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun AddEventPreview() {
-    AddEventScreen(appViewModel = AppViewModel(), onPostClicked = {})
+fun AddProjectScreenPreview(){
+    AddProjectScreen(appViewModel = viewModel(), onAddProjectClicked = { })
 }

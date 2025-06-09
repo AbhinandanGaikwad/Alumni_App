@@ -1,17 +1,13 @@
-package com.example.alumni.ui
+package com.example.alumni.ui.dashboard
 
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,35 +18,41 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowForwardIos
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.alumni.R
+import androidx.compose.foundation.lazy.items
+import com.example.alumni.data.Event
+import com.example.alumni.data.Story
+import com.example.alumni.ui.viewmodel.AppViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun DashboardScreen(
@@ -58,7 +60,6 @@ fun DashboardScreen(
     onEditButtonClicked: () -> Unit,
     onSearchClicked: () -> Unit,
     onDonateClicked: () -> Unit,
-    onAddOpeningsClicked: () -> Unit,
     onProjectClicked: () -> Unit,
     onViewOpeningsClicked: () -> Unit,
     onAddStoryClicked: () -> Unit,
@@ -66,7 +67,8 @@ fun DashboardScreen(
     onFeedbackClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val appUiState by appViewModel.uiState.collectAsState()
+    val userName by appViewModel.userName
+    val userType by appViewModel.userType
 
     Surface(
         modifier = modifier
@@ -77,12 +79,16 @@ fun DashboardScreen(
         Column {
             ProfileCard(
                 profilePhoto = R.drawable.user,
-                name = appUiState.fullName,
-                position = if (appUiState.user == "alumni") { stringResource(R.string.alumni) } else if (appUiState.user == "college") { stringResource(R.string.college_admin) } else { stringResource(R.string.student) },
-                onEditButtonClicked = onEditButtonClicked
+                name = userName,
+                position = when (userType) {
+                    "alumni" -> stringResource(R.string.alumni)
+                    "college" -> stringResource(R.string.college_admin)
+                    else -> stringResource(R.string.student)
+                },
+//                onEditButtonClicked = onEditButtonClicked
             )
             SearchAlumniButton(onSearchClicked = onSearchClicked)
-            if (appUiState.user == "alumni") {
+            if (userType == "alumni") {
                 Row(
                     modifier = modifier.padding(
                         top = dimensionResource(R.dimen.padding_medium),
@@ -97,11 +103,11 @@ fun DashboardScreen(
                     Spacer(modifier = modifier.width(dimensionResource(R.dimen.padding_medium)))
                     BigSelectCard(
                         text = stringResource(R.string.add_openings),
-                        onSelectClicked = onAddOpeningsClicked,
+                        onSelectClicked = onViewOpeningsClicked,
                         modifier = modifier.weight(1f)
                     )
                 }
-            } else if (appUiState.user == "college") {
+            } else if (userType == "college") {
                 Row(
                     modifier = modifier.padding(
                         top = dimensionResource(R.dimen.padding_medium),
@@ -157,7 +163,7 @@ fun ProfileCard(
     @DrawableRes profilePhoto: Int,
     name: String,
     position: String,
-    onEditButtonClicked: () -> Unit,
+//    onEditButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -187,17 +193,17 @@ fun ProfileCard(
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
-            IconButton(
-                onClick = { onEditButtonClicked() },
-                modifier = modifier
-                    .padding(dimensionResource(R.dimen.padding_small))
-                    .fillMaxHeight()
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Edit,
-                    contentDescription = stringResource(R.string.edit_profile)
-                )
-            }
+//            IconButton(
+//                onClick = { onEditButtonClicked() },
+//                modifier = modifier
+//                    .padding(dimensionResource(R.dimen.padding_small))
+//                    .fillMaxHeight()
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Filled.Edit,
+//                    contentDescription = stringResource(R.string.edit_profile)
+//                )
+//            }
         }
     }
 }
@@ -292,7 +298,7 @@ fun SuccessStoriesPanel(
     onAddStoryClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val appUiState by appViewModel.uiState.collectAsState()
+    val userType by appViewModel.userType
 
     Column(
         modifier = modifier.padding(bottom = dimensionResource(R.dimen.padding_medium))
@@ -302,17 +308,29 @@ fun SuccessStoriesPanel(
             style = MaterialTheme.typography.titleMedium,
             modifier = modifier.padding(bottom = dimensionResource(R.dimen.padding_small))
         )
+
         Card(
             modifier = modifier
                 .fillMaxWidth()
                 .height(168.dp)
         ) {
-            if (appUiState.user == "alumni") {
-                if (appUiState.isStoryAdded) {
-                    Row {
-                        StoryCard(appViewModel = appViewModel)
+            LazyRow(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(180.dp),
+                contentPadding = PaddingValues(horizontal = 8.dp)
+            ) {
+                items(appViewModel.successStories) { story ->
+                    StoryCard(
+                        appViewModel = appViewModel,
+                        story = story
+                    )
+                }
+
+                if (userType == "alumni") {
+                    item {
                         ElevatedCard(
-                            onClick = { onAddStoryClicked() },
+                            onClick = onAddStoryClicked,
                             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                             modifier = modifier
                                 .padding(dimensionResource(R.dimen.padding_small))
@@ -330,64 +348,80 @@ fun SuccessStoriesPanel(
                                 text = stringResource(R.string.add_your_story),
                                 fontSize = 16.sp,
                                 textAlign = TextAlign.Center,
-                                modifier = modifier.align(Alignment.CenterHorizontally)
+                                modifier = modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .padding(4.dp)
                             )
                         }
                     }
-                } else {
-                    ElevatedCard(
-                        onClick = { onAddStoryClicked() },
-                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                        modifier = modifier
-                            .padding(dimensionResource(R.dimen.padding_small))
-                            .height(152.dp)
-                            .width(124.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = stringResource(R.string.add_button),
-                            modifier = modifier
-                                .size(50.dp)
-                                .align(Alignment.CenterHorizontally)
-                        )
-                        Text(
-                            text = stringResource(R.string.add_your_story),
-                            fontSize = 16.sp,
-                            textAlign = TextAlign.Center,
-                            modifier = modifier.align(Alignment.CenterHorizontally)
-                        )
-                    }
                 }
-            } else {
-                if (appUiState.isStoryAdded) { StoryCard(appViewModel = appViewModel) }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StoryCard(
     appViewModel: AppViewModel,
+    story: Story,
     modifier: Modifier = Modifier
 ) {
-    val appUiState by appViewModel.uiState.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
 
     ElevatedCard(
+        onClick = { showDialog = true },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         modifier = modifier
             .padding(dimensionResource(R.dimen.padding_small))
             .height(152.dp)
-            .width(124.dp)
+            .width(200.dp)
     ) {
-        Text(
-            text = appUiState.nameStory,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = modifier.padding(dimensionResource(R.dimen.padding_small))
-        )
-        Text(
-            text = appUiState.successStory,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = modifier.padding(start = dimensionResource(R.dimen.padding_small))
+        Column(
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+        ) {
+            Text(
+                text = story.name,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = story.story,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 4,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+
+    if (showDialog) {
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+        val isOwner = story.uid == currentUserUid
+        val isAdmin = appViewModel.userType.value == "college"
+
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("Close")
+                }
+            },
+            dismissButton = {
+                if (isOwner || isAdmin) {
+                    TextButton(
+                        onClick = {
+                            appViewModel.deleteStory(story)
+                            showDialog = false
+                        }
+                    ) {
+                        Text("Delete", color = MaterialTheme.colorScheme.error)
+                    }
+                }
+            },
+            title = { Text(text = story.name) },
+            text = { Text(text = story.story) }
         )
     }
 }
@@ -399,7 +433,9 @@ fun EventPanel(
     onAddEventClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val appUiState by appViewModel.uiState.collectAsState()
+    val userType by appViewModel.userType
+    val events by appViewModel.events.collectAsState()
+
     Column(
         modifier = modifier.padding(bottom = dimensionResource(R.dimen.padding_medium))
     ) {
@@ -408,19 +444,26 @@ fun EventPanel(
             style = MaterialTheme.typography.titleMedium,
             modifier = modifier.padding(bottom = dimensionResource(R.dimen.padding_small))
         )
+
         Card(
             modifier = modifier
                 .fillMaxWidth()
                 .height(168.dp)
         ) {
-            if (appUiState.user == "alumni") {
-                if (appUiState.isEventAdded) { EventCard(appViewModel = appViewModel) }
-            } else {
-                if (appUiState.isEventAdded) {
-                    Row {
-                        EventCard(appViewModel = appViewModel)
+            LazyRow(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(180.dp),
+                contentPadding = PaddingValues(horizontal = 8.dp)
+            ) {
+                items(events) { event ->
+                    EventCard(appViewModel = appViewModel, event = event)
+                }
+
+                if (userType == "college" || userType == "student") {
+                    item {
                         ElevatedCard(
-                            onClick = { onAddEventClicked() },
+                            onClick = onAddEventClicked,
                             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                             modifier = modifier
                                 .padding(dimensionResource(R.dimen.padding_small))
@@ -442,79 +485,73 @@ fun EventPanel(
                             )
                         }
                     }
-                } else {
-                    ElevatedCard(
-                        onClick = { onAddEventClicked() },
-                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                        modifier = modifier
-                            .padding(dimensionResource(R.dimen.padding_small))
-                            .height(152.dp)
-                            .width(124.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = stringResource(R.string.add_button),
-                            modifier = modifier
-                                .size(50.dp)
-                                .align(Alignment.CenterHorizontally)
-                        )
-                        Text(
-                            text = stringResource(R.string.add_event),
-                            fontSize = 16.sp,
-                            textAlign = TextAlign.Center,
-                            modifier = modifier.align(Alignment.CenterHorizontally)
-                        )
-                    }
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventCard(
     appViewModel: AppViewModel,
+    event: Event,
     modifier: Modifier = Modifier
 ) {
-    val appUiState by appViewModel.uiState.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
 
     ElevatedCard(
+        onClick = { showDialog = true },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         modifier = modifier
             .padding(dimensionResource(R.dimen.padding_small))
             .height(152.dp)
-            .width(124.dp)
+            .width(200.dp)
     ) {
-        Column(
-            modifier = modifier.padding(dimensionResource(R.dimen.padding_small))
-        ) {
-            Text(
-                text = "Event: ",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = appUiState.eventDescription,
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Text(
-                text = "Date: ",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = appUiState.eventDate,
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Text(
-                text = "Time: ",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = appUiState.eventTime,
-                style = MaterialTheme.typography.bodyLarge
-            )
+        Column(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))) {
+            Text("Event:", style = MaterialTheme.typography.titleMedium)
+            Text(event.description, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+
+            Spacer(Modifier.height(4.dp))
+
+            Text("Date: ${event.date}", style = MaterialTheme.typography.bodySmall)
+            Text("Time: ${event.time}", style = MaterialTheme.typography.bodySmall)
+            Text("Venue: ${event.venue}", style = MaterialTheme.typography.bodySmall)
         }
     }
+
+    if (showDialog) {
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+        val isOwner = event.uid == currentUserUid
+        val isAdmin = appViewModel.userType.value == "college"
+
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("Close")
+                }
+            },
+            dismissButton = {
+                if (isOwner || isAdmin) {
+                    TextButton(
+                        onClick = {
+                            appViewModel.deleteEvent(event)
+                            showDialog = false
+                        }
+                    ) {
+                        Text("Delete", color = MaterialTheme.colorScheme.error)
+                    }
+                }
+            },
+            title = { Text(text = "Event Details") },
+            text = {
+                Text("${event.description}\n\nDate: ${event.date}\nTime: ${event.time}\nVenue: ${event.venue}")
+            }
+        )
+    }
 }
+
 
 @Preview(showBackground = true)
 @Composable
@@ -524,7 +561,6 @@ fun DashboardPreview() {
         onEditButtonClicked = {},
         onSearchClicked = {},
         onDonateClicked = {},
-        onAddOpeningsClicked = {},
         onProjectClicked = {},
         onViewOpeningsClicked = {},
         onAddStoryClicked = {},

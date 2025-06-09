@@ -1,9 +1,10 @@
-package com.example.alumni.ui
+package com.example.alumni.ui.auth
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -53,18 +55,24 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.alumni.R
+import com.example.alumni.ui.viewmodel.AppViewModel
 
 
 @Composable
 fun LoginScreen(
     appViewModel: AppViewModel,
     onLoginButtonClicked: () -> Unit,
+    onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val appUiState by appViewModel.uiState.collectAsState()
     var passwordVisible: Boolean by remember { mutableStateOf(false) }
 
-    Surface(modifier = modifier.fillMaxSize()) {
+    Surface(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(state = ScrollState(0))
+    ) {
         Column(
             modifier = modifier.padding(dimensionResource(R.dimen.padding_medium)),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -179,6 +187,14 @@ fun LoginScreen(
                             .padding(dimensionResource(R.dimen.padding_medium))
                             .fillMaxWidth()
                     )
+                    Divider(
+                        thickness = dimensionResource(R.dimen.thickness_divider),
+                        modifier = modifier.padding(
+                            start = dimensionResource(R.dimen.padding_medium),
+                            end = dimensionResource(R.dimen.padding_medium)
+                        )
+                    )
+                    SignUpPrompt(onSignUpClick = { onSignUpClick() })
                 }
             }
         }
@@ -186,20 +202,39 @@ fun LoginScreen(
 }
 
 @Composable
+fun SignUpPrompt(onSignUpClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(dimensionResource(R.dimen.padding_medium)),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(text = "Don't have an account? ")
+        Text(
+            text = "Sign up",
+            color = colorScheme.primary,
+            modifier = Modifier.clickable(onClick = onSignUpClick),
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+
+@Composable
 fun GoogleButton(
     modifier: Modifier = Modifier,
     text: String = "Sign Up with Google",
     loadingText: String = "Creating Account...",
     icon: Int = R.drawable.ic_google_logo,
-    shape: Shape = MaterialTheme.shapes.medium,
-    backgroundColor: Color = MaterialTheme.colorScheme.surface,
-    progressIndicatorColor: Color = MaterialTheme.colorScheme.primary,
+    shape: Shape = shapes.medium,
+    backgroundColor: Color = colorScheme.surface,
+    progressIndicatorColor: Color = colorScheme.primary,
     onClicked: () -> Unit,
 ) {
     var clicked by remember { mutableStateOf(false) }
     Surface(
         modifier = modifier
-            .clip(MaterialTheme.shapes.medium)
+            .clip(shapes.medium)
             .clickable {
                 clicked = !clicked
                 onClicked()
@@ -248,5 +283,5 @@ fun GoogleButton(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(AppViewModel(), onLoginButtonClicked = {})
+    LoginScreen(AppViewModel(), onLoginButtonClicked = {}, onSignUpClick = {})
 }

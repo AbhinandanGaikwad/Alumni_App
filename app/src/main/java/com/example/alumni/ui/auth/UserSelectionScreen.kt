@@ -1,4 +1,4 @@
-package com.example.alumni.ui
+package com.example.alumni.ui.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.alumni.R
+import com.example.alumni.ui.viewmodel.AppViewModel
 
 @Composable
 fun UserSelectionScreen(
@@ -33,7 +34,7 @@ fun UserSelectionScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = stringResource(R.string.login_as),
+                text = stringResource(R.string.register_as),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = modifier.padding(dimensionResource(R.dimen.padding_small))
             )

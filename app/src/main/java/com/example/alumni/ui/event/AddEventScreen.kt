@@ -1,5 +1,6 @@
-package com.example.alumni.ui
+package com.example.alumni.ui.event
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,21 +14,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
-import androidx.navigation.testing.TestNavHostController
 import com.example.alumni.R
+import com.example.alumni.ui.viewmodel.AppViewModel
 
 @Composable
-fun AddOpeningScreen(
+fun AddEventScreen(
     appViewModel: AppViewModel,
-    onAddClicked: () -> Unit,
+    onPostClicked: () -> Unit,
     modifier: Modifier = Modifier
-){
-
+) {
     val appUiState by appViewModel.uiState.collectAsState()
 
     Column(
@@ -36,61 +34,64 @@ fun AddOpeningScreen(
             .padding(dimensionResource(R.dimen.padding_medium))
     ) {
         Text(
-            text = "Add Opening",
+            text = stringResource(R.string.add_event),
             style = MaterialTheme.typography.titleMedium,
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = dimensionResource(R.dimen.padding_small))
         )
         OutlinedTextField(
-            value = appUiState.openingName,
-            onValueChange = { appViewModel.setOpeningName(it) },
-            label = { Text("Opening Name") },
+            value = appUiState.eventDescription,
+            onValueChange = { appViewModel.setEventDescription(it) },
+            label = { Text("Event Description") },
             modifier = modifier
                 .fillMaxWidth()
                 .padding(bottom = dimensionResource(R.dimen.padding_small))
         )
         OutlinedTextField(
-            value = appUiState.companyName,
-            onValueChange = { appViewModel.setCompanyName(it) },
-            label = { Text("Company Name") },
+            value = appUiState.eventDate,
+            onValueChange = { appViewModel.setEventDate(it) },
+            label = { Text("Date") },
             modifier = modifier
                 .fillMaxWidth()
                 .padding(bottom = dimensionResource(R.dimen.padding_small))
         )
         OutlinedTextField(
-            value = appUiState.roleName,
-            onValueChange = { appViewModel.setRoleName(it) },
-            label = { Text("Role Name") },
+            value = appUiState.eventTime,
+            onValueChange = { appViewModel.setEventTime(it) },
+            label = { Text("Time") },
             modifier = modifier
                 .fillMaxWidth()
                 .padding(bottom = dimensionResource(R.dimen.padding_small))
         )
-
         OutlinedTextField(
-            value = appUiState.requiredExperience,
-            onValueChange = { appViewModel.setRequiredExperience(it) },
-            label = { Text("Required Work Experience") },
+            value = appUiState.eventVenue,
+            onValueChange = { appViewModel.setEventVenue(it) },
+            label = { Text("Venue") },
             modifier = modifier
                 .fillMaxWidth()
-                .padding(bottom = dimensionResource(R.dimen.padding_small))
+                .padding(bottom = dimensionResource(R.dimen.padding_medium))
         )
-
         Button(
             modifier = modifier.align(Alignment.CenterHorizontally),
-            onClick = { onAddClicked() }
+            onClick = {
+                appViewModel.postEventToFirebase(
+                    onSuccess = { onPostClicked() },
+                    onFailure = { e -> Log.e("Firestore", "Failed to post event", e) }
+                )
+            }
         ) {
             Text(
-                text = stringResource(R.string.add_new_opening),
+                text = stringResource(R.string.post),
                 style = MaterialTheme.typography.titleMedium
             )
         }
+
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun AddOpeningPreview() {
-
-    AddOpeningScreen(appViewModel = AppViewModel(), onAddClicked = { })
+fun AddEventPreview() {
+    AddEventScreen(appViewModel = AppViewModel(), onPostClicked = {})
 }

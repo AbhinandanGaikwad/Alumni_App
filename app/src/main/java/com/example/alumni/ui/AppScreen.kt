@@ -1,11 +1,11 @@
 package com.example.alumni.ui
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Logout
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,11 +25,27 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.alumni.R
+import com.example.alumni.ui.alumn_dir.AlumniNetworkScreen
+import com.example.alumni.ui.auth.LoginScreen
+import com.example.alumni.ui.auth.ProfileScreen
+import com.example.alumni.ui.auth.RegisterScreen
+import com.example.alumni.ui.auth.UserSelectionScreen
+import com.example.alumni.ui.dashboard.DashboardScreen
+import com.example.alumni.ui.event.AddEventScreen
+import com.example.alumni.ui.feedback.FeedbackScreen
+import com.example.alumni.ui.opening.AddOpeningScreen
+import com.example.alumni.ui.opening.OpportunityScreen
+import com.example.alumni.ui.project.AddProjectScreen
+import com.example.alumni.ui.project.DonationScreen
+import com.example.alumni.ui.project.ProjectScreen
+import com.example.alumni.ui.story.AddStoryScreen
+import com.example.alumni.ui.viewmodel.AppViewModel
 
 enum class AppScreen(@StringRes val title: Int){
     Login(title = R.string.login_screen),
     UserSelection(title = R.string.select_user),
     ProfileUpdate(title = R.string.profile_update),
+    Register(title = R.string.register_user),
     DashboardScreen(title = R.string.dashboard),
     DonationScreen(title = R.string.donation),
     ProjectScreen(title = R.string.projects_initiatives),
@@ -93,7 +109,6 @@ fun AlumniApp(
     val appUiState by viewModel.uiState.collectAsState()
 
     val backStackEntry by navController.currentBackStackEntryAsState()
-    // Get the name of the current screen
     val currentScreen = AppScreen.valueOf(
         backStackEntry?.destination?.route ?: AppScreen.Login.name
     )
@@ -119,11 +134,22 @@ fun AlumniApp(
                 LoginScreen(
                     appViewModel = viewModel,
                     onLoginButtonClicked = {
-                        if (appUiState.isProfileCreated) {
-                            navController.navigate(AppScreen.DashboardScreen.name)
-                        } else {
-                            navController.navigate(AppScreen.UserSelection.name)
-                        }
+                        viewModel.loginUser(
+                            onSuccess = {
+                                // navigate to DashboardScreen if login is successful
+                                navController.navigate(AppScreen.DashboardScreen.name) {
+                                    popUpTo(AppScreen.Login.name) {
+                                        inclusive = true
+                                    } // remove Login from backstack
+                                }
+                            },
+                            onError = { error ->
+                                Log.e("Login", error)
+                            }
+                        )
+                    },
+                    onSignUpClick = {
+                        navController.navigate(AppScreen.UserSelection.name)
                     }
                 )
             }
@@ -139,9 +165,16 @@ fun AlumniApp(
                 ProfileScreen(
                     appViewModel = viewModel,
                     onSubmitClicked = {
-                        navController.navigate(AppScreen.DashboardScreen.name)
+                        navController.navigate(AppScreen.Register.name)
                         viewModel.setProfileTrue()
                     }
+                )
+            }
+
+            composable(route = AppScreen.Register.name) {
+                RegisterScreen(
+                    viewModel = viewModel,
+                    navController = navController
                 )
             }
 
@@ -151,7 +184,6 @@ fun AlumniApp(
                     onEditButtonClicked = { navController.navigate(AppScreen.ProfileUpdate.name) },
                     onSearchClicked = { navController.navigate(AppScreen.AlumniNetworkScreen.name) },
                     onDonateClicked = { navController.navigate(AppScreen.DonationScreen.name) },
-                    onAddOpeningsClicked = { navController.navigate(AppScreen.OpportunityScreen.name) },
                     onProjectClicked = { navController.navigate(AppScreen.ProjectScreen.name) },
                     onViewOpeningsClicked = { navController.navigate(AppScreen.OpportunityScreen.name) },
                     onAddStoryClicked = { navController.navigate(AppScreen.AddStoryScreen.name) },
@@ -185,7 +217,6 @@ fun AlumniApp(
                 AddStoryScreen(
                     appViewModel = viewModel,
                     onPostClicked = {
-                        viewModel.setStoryTrue()
                         navController.navigate(AppScreen.DashboardScreen.name)
                     }
                 )
@@ -195,7 +226,6 @@ fun AlumniApp(
                 AddEventScreen(
                     appViewModel = viewModel,
                     onPostClicked = {
-                        viewModel.setEventTrue()
                         navController.navigate(AppScreen.DashboardScreen.name)
                     }
                 )
@@ -216,25 +246,20 @@ fun AlumniApp(
             }
 
             composable(route = AppScreen.AddOpeningScreen.name) {
-                AddOpeningScreen(appViewModel = viewModel,
-                    onAddClicked = { viewModel.setOpeningTrue()
-                        navController.navigate(AppScreen.DashboardScreen.name)
-                    }
-                )
-                   }
-
-            composable(route = AppScreen.AddProjectScreen.name) {
-                AddProjectScreen(appViewModel = viewModel,
-                    onAddProjectClicked = {
-                        viewModel.setProjectTrue()
-                        navController.navigate(AppScreen.DashboardScreen.name)
-                    }
-                )
+                AddOpeningScreen(appViewModel = viewModel)
             }
 
+            composable(route = AppScreen.AddProjectScreen.name) {
+                AddProjectScreen(
+                    appViewModel = viewModel,
+                    onAddProjectClicked = {
+                        navController.navigate(AppScreen.ProjectScreen.name)
+                    }
+                )
             }
         }
     }
+}
 
     /*NavHost(navController = navController,
         startDestination = AppScreen.Login.name) {

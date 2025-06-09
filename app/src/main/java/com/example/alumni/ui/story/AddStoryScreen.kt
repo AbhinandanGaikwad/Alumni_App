@@ -1,5 +1,6 @@
-package com.example.alumni.ui
+package com.example.alumni.ui.story
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
@@ -18,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.alumni.R
+import com.example.alumni.ui.viewmodel.AppViewModel
 
 @Composable
 fun AddStoryScreen(
@@ -41,12 +43,6 @@ fun AddStoryScreen(
                 .padding(bottom = dimensionResource(R.dimen.padding_small))
         )
         OutlinedTextField(
-            value = appUiState.nameStory,
-            onValueChange = { newText -> appViewModel.setNameStory(newText) },
-            label = { Text("Enter Your Name") },
-            modifier = modifier.padding(bottom = dimensionResource(R.dimen.padding_medium))
-        )
-        OutlinedTextField(
             value = appUiState.successStory,
             onValueChange = { newText -> appViewModel.setStory(newText) },
             label = { Text("Enter Your Story") },
@@ -56,7 +52,14 @@ fun AddStoryScreen(
         )
         Button(
             modifier = modifier.align(Alignment.CenterHorizontally),
-            onClick = { onPostClicked() }
+            onClick = {
+                appViewModel.postStoryToFirebase(
+                    onSuccess = { onPostClicked() },
+                    onFailure = { e ->
+                        Log.e("AddStory", "Failed to post story: ${e.message}")
+                    }
+                )
+            }
         ) {
             Text(
                 text = stringResource(R.string.post),

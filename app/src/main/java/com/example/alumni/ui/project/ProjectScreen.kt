@@ -1,16 +1,13 @@
-package com.example.alumni.ui
+package com.example.alumni.ui.project
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,22 +16,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,90 +42,76 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.testing.TestNavHostController
 import com.example.alumni.R
-import com.example.alumni.data.Project
+import com.example.alumni.ui.AppScreen
+import com.example.alumni.ui.viewmodel.AppViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ProjectScreen(
     appViewModel: AppViewModel,
     navController: NavController,
     modifier: Modifier = Modifier
-){
-    val appUiState by appViewModel.uiState.collectAsState()
-    var expandedStatic by remember { mutableStateOf(false) }
-    var expandedDynamic by remember { mutableStateOf(false) }
-
-    val expandedStates = remember { mutableStateMapOf<Int, Boolean>() }
-    val projects = Project.projects
-
-
-    Surface(modifier = modifier.fillMaxSize()) {
-        Column(modifier = modifier.fillMaxSize().padding(5.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-
-            LazyColumn {
-
-                item {
-                    Text(
-                        text = stringResource(R.string.current_projects),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.W600,
-                        textAlign = TextAlign.Center,
-                        modifier = modifier.padding(10.dp)
-                    )
-                }
-
-                item {
-                    ProjectCard(
-                        projectName = stringResource(R.string.project1) ,
-                        projectDescription = stringResource(R.string.project_description),
-                        isExpanded = expandedStatic,
-                        onExpandClick = { expandedStatic = !expandedStatic}
-                    )
-                }
-
-                if(appUiState.isProjectAdded){
-                    item {
-                        ProjectCard(
-                            projectName = appUiState.projectName,
-                            projectDescription = appUiState.projectDescription,
-                            isExpanded = expandedDynamic,
-                            onExpandClick = { expandedDynamic = !expandedDynamic}
-                        )
-                    }
-                }
-
-                item {
-
-                    Box(
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .align(Alignment.CenterHorizontally)
-                    ){
-                        Button(
-                            onClick = { navController.navigate(AppScreen.AddProjectScreen.name) },
-                            modifier = Modifier.align(Alignment.Center)
-                        ) {
-
-                            Icon(
-                                imageVector = Icons.Filled.Add,
-                                contentDescription = "Add",
-                                modifier = modifier.padding(end = 10.dp)
-                            )
-
-                            Text(text = "Add new project")
-
-
-
-                        }
-                    }
-                }
-            }
-
-        }
+) {
+    LaunchedEffect(Unit) {
+        appViewModel.fetchProjects()
     }
 
+    val projects = appViewModel.projects
+
+    val expandedStates = remember { mutableStateMapOf<String, Boolean>() }
+
+    LazyColumn {
+        item {
+            Text(
+                text = stringResource(R.string.current_projects),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.W600,
+                textAlign = TextAlign.Center,
+                modifier = modifier.padding(10.dp)
+            )
+        }
+
+        items(projects) { project ->
+            val isExpanded = expandedStates[project.id] ?: false
+
+            ProjectCard(
+                projectName = project.name,
+                projectDescription = project.description,
+                projectCost = project.cost,
+                isExpanded = isExpanded,
+                onExpandClick = {
+                    expandedStates[project.id] = !isExpanded
+                },
+                currentUserUid = FirebaseAuth.getInstance().currentUser?.uid ?: "",
+                postedByUid = project.uid,
+                onDeleteClick = {
+                    appViewModel.deleteProject(project)
+                    expandedStates.remove(project.id)
+                }
+            )
+        }
+
+        item {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Button(
+                    onClick = { navController.navigate(AppScreen.AddProjectScreen.name) },
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Add",
+                        modifier = modifier.padding(end = 10.dp)
+                    )
+                    Text(text = "Add new project")
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -155,8 +134,12 @@ private fun ProjectItemButton(
 fun ProjectCard(
     projectName: String,
     projectDescription: String,
+    projectCost: String,
     isExpanded: Boolean,
     onExpandClick: () -> Unit,
+    currentUserUid: String,
+    postedByUid: String,
+    onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
 
@@ -200,7 +183,6 @@ fun ProjectCard(
                     onClick = onExpandClick
                 )
 
-
             }
 
             if (isExpanded) {
@@ -208,9 +190,24 @@ fun ProjectCard(
                     text = projectDescription,
                     style = MaterialTheme.typography.labelLarge,
                     color = Color.Black,
+                    modifier = modifier.padding(start = 16.dp, bottom = 8.dp)
+                )
+                Text(
+                    text = "PROJECT COST: ₹ $projectCost /-",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.Black,
                     modifier = modifier.padding(start = 16.dp, bottom = 16.dp)
-
-                    )
+                )
+                if (currentUserUid == postedByUid) {
+                    TextButton(
+                        onClick = onDeleteClick,
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(end = 16.dp, bottom = 8.dp)
+                    ) {
+                        Text(text = "Delete", color = MaterialTheme.colorScheme.error)
+                    }
+                }
             }
         }
     }

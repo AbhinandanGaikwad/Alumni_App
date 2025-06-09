@@ -1,9 +1,7 @@
-package com.example.alumni.ui
+package com.example.alumni.ui.auth
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.ScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.alumni.ui.viewmodel.AppViewModel
 
 @Composable
 fun ProfileScreen(
@@ -74,19 +73,6 @@ fun ProfileScreen(
                         imeAction = ImeAction.Next
                     )
 
-                )
-
-                Text(
-                    text = "Email Address",
-                    style = MaterialTheme.typography.labelLarge,
-                    fontSize = 17.sp
-                )
-
-                FixedSizeBorderText(
-                    text = appUiState.userEmail,
-                    borderSize = 2.dp,
-                    borderColor = Color.Black,
-                    modifier = Modifier.padding(bottom = 40.dp)
                 )
 
                 Text(

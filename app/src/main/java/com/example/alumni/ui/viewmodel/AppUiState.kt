@@ -1,10 +1,16 @@
-package com.example.alumni.ui
+package com.example.alumni.ui.viewmodel
 
+import com.example.alumni.data.Project
 
 data class AppUiState(
     val user: String = "",
     val userEmail : String = "",
     val userPassword: String = "",
+    val email: String = "",
+    val password: String = "",
+    val confirmPassword: String = "",
+    val passwordVisible: Boolean = false,
+    val confirmPasswordVisible: Boolean = false,
     var fullName: String = "",
     var passingYear: String = "",
     var phoneNo: String = "",
@@ -33,4 +39,7 @@ data class AppUiState(
     var openingDescription: String = "",
     var projectName: String = "",
     var projectDescription: String = "",
+    var contactEmail: String = "",
+    var projectCost: String = "",
+    val projectList: List<Project> = emptyList()
 )
