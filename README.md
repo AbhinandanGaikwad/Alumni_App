@@ -78,9 +78,9 @@ com.example.alumni
 ├── AppViewModel.kt           # Central ViewModel for state & Firebase
 ├── AppUiState.kt             # Sealed class for managing UI states
 └── MainActivity.kt
+
 🔧 Setup & Run Locally
 Clone the repository:
-
 bash
 Copy
 Edit
