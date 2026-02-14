@@ -1,4 +1,4 @@
-🧑‍🎓 Alumni Connect App
+[🧑‍🎓 Alumni Connect App
 Alumni Connect is a modern Android app built with Jetpack Compose that bridges the gap between alumni and current students. It supports alumni networking, events, job openings, projects, and success stories — all managed in real time with Firebase Firestore and Authentication.
 
 🚀 Features:
@@ -94,3 +94,4 @@ Add google-services.json to app/
 Enable Firestore and Auth (Email/Password) in Firebase console
 
 Sync Gradle and Run the app! ✅
+](https://github.com/AbhinandanGaikwad/Alumni_App)
