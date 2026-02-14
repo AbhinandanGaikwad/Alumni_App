@@ -1,97 +1,121 @@
-[🧑‍🎓 Alumni Connect App
-Alumni Connect is a modern Android app built with Jetpack Compose that bridges the gap between alumni and current students. It supports alumni networking, events, job openings, projects, and success stories — all managed in real time with Firebase Firestore and Authentication.
+# Alumni Connect App
 
-🚀 Features:
+Alumni Connect is an Android application built using **Jetpack Compose** that helps students and alumni stay connected. The app allows users to view alumni profiles, job openings, projects, events, and success stories in a clean and modern interface.
 
-🔐 Authentication
+---
 
-Firebase Email/Password login & registration
+## Features
 
-User type-based routing (Admin / Alumni / Student)
+### Authentication
 
-🧑‍💼 Alumni Profiles
+* Firebase Email/Password login and registration
+* Role-based usage (Admin / Alumni / Student)
 
-Alumni can register and create profiles
+### Alumni Profiles
 
-Displays work details, experience, location, contact options (LinkedIn, WhatsApp, Email)
+* Create and manage alumni profiles
+* Information such as company, experience, and location
 
-📅 Event Management
+### Events
 
-Admins/owners can add and delete events
+* Admin can add and delete events
+* Expandable event cards
+* Real-time updates
 
-Events shown with expandable cards
+### Job Openings
 
-🧠 Success Stories
+* Post and view job opportunities
+* Helps students find referrals and placements
 
-Add and view inspirational alumni stories
+### Projects
 
-💼 Job Openings
+* Share and view projects
+* Useful for collaboration and showcasing work
 
-Post, view, and manage job openings
+### Success Stories
 
-🚀 Projects
+* Alumni experiences and achievements
+* Motivational content for students
 
-Alumni/students can share projects they’ve worked on
+### Search
 
-🔍 Search Functionality
+Search alumni by:
 
-Search alumni by name, graduation year, location, job, or experience
+* Name
+* Passing year
+* Location
+* Experience
 
-🎨 Jetpack Compose UI
+---
 
-Beautiful, responsive UI with clean animations and theming
+## Tech Stack
 
-🛠️ Tech Stack
-Layer	Tools/Tech Used
-UI	Jetpack Compose, Material3
-State Mgmt	ViewModel + collectAsState()
-Auth	Firebase Authentication
-Database	Firebase Firestore
-Image Assets	Local painterResource() (for profile/icons)
-Architecture	MVVM + Firebase Realtime Integration
+**Frontend**
 
-📁 Folder Structure
-graphql
-Copy
-Edit
-com.example.alumni
-├── data
-│   ├── AlumniProfile.kt
-│   ├── Event.kt
-│   ├── Opening.kt
-│   ├── Project.kt
-│   └── Story.kt
+* Kotlin
+* Jetpack Compose
+* Material 3
+
+**Architecture**
+
+* MVVM
+* ViewModel
+* State management
+
+**Backend**
+
+* Firebase Authentication
+* Firebase Firestore
+
+---
+
+## Project Structure
+
+```
+Alumni_App/
 │
-├── ui
-│   ├── auth/                  # Login & Register screens
-│   ├── dashboard/             # Main navigation screen
-│   ├── event/                 # AddEventScreen, Event UI
-│   ├── project/               # AddProjectScreen, ProjectScreen
-│   ├── story/                 # AddStoryScreen, Story UI
-│   ├── opening/               # AddOpeningScreen, Job UI
-│   ├── profile/               # Alumni profile and view
-│   ├── selection/             # User type selection
-│   ├── feedback/              # Feedback screen (if any)
-│   ├── theme/                 # UI themes and styles
-│   └── AlumniNetworkScreen.kt# Main networking screen
-│
-├── AppViewModel.kt           # Central ViewModel for state & Firebase
-├── AppUiState.kt             # Sealed class for managing UI states
-└── MainActivity.kt
+├── data/                # Data models
+├── ui/                  # UI screens and components
+├── viewmodel/           # ViewModels
+├── MainActivity.kt
+└── AppViewModel.kt
+```
 
-🔧 Setup & Run Locally
-Clone the repository:
-bash
-Copy
-Edit
-git clone https://github.com/your-username/alumni-connect.git
-Open in Android Studio
+---
 
-Setup Firebase:
+## Setup Instructions
 
-Add google-services.json to app/
+### 1. Clone the repository
 
-Enable Firestore and Auth (Email/Password) in Firebase console
+```bash
+git clone https://github.com/AbhinandanGaikwad/Alumni_App.git
+```
 
-Sync Gradle and Run the app! ✅
-](https://github.com/AbhinandanGaikwad/Alumni_App)
+### 2. Open in Android Studio
+
+Open the project folder and allow Gradle to sync.
+
+### 3. Configure Firebase
+
+1. Create a Firebase project
+2. Enable Authentication (Email/Password)
+3. Enable Firestore Database
+4. Download `google-services.json`
+5. Place it in:
+
+```
+app/google-services.json
+```
+
+### 4. Run the app
+
+Click **Run ▶** in Android Studio.
+
+---
+
+## Future Improvements
+
+* In-app chat
+* Notifications
+* Resume sharing
+* Admin analytics
